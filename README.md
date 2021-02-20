@@ -1,5 +1,7 @@
 # Fanorona
 ---
+[Click here to play](https://zyrrus.github.io/fanorona/)
+---
 ## Here are the rules as explained by [Boardspace](https://www.boardspace.net/fanorona/english/rules.html)
 
 ### Moving: 
