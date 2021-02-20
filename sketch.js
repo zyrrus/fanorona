@@ -52,7 +52,7 @@ function handleTurns(indices, player) {
     let tile = board.clickedOn(indices[0], indices[1]);
 
     if (move.moveIsHappening) {
-        if (tile == 0) {
+        if ((tile == 0) || (tile == (move.player % 2) + 1 && move.choosingDir)) {
             move.nextMove(indices[0], indices[1]);
         }
         else if (tile == move.player && move.history.length <= 1) {

@@ -3,7 +3,7 @@ class Move {
         this.player = 1;
         this.moveIsHappening = false;
         this.noMovesExist = false;
-        this.chooseDir = false;
+        this.choosingDir = false;
 
         this.history = [];
         this.verifiedMoves = []
@@ -26,7 +26,6 @@ class Move {
     }
 
     findAny() {
-        console.log("find any")
         let cur = this.history[this.history.length - 1];
         let unverifiedMoves = this.getUnverifiedMoves(cur);
         this.verifiedMoves = unverifiedMoves;
@@ -41,7 +40,7 @@ class Move {
     }
 
     findNext() {
-        console.log("find normally")
+        console.log("finding next")
         let cur = this.history[this.history.length - 1];
         let unverifiedMoves = this.getUnverifiedMoves(cur);
         this.verifiedMoves = [];
@@ -49,8 +48,9 @@ class Move {
         
         board.highlighting = [];
 
+
         // No possible moves left
-        if (this.verifiedMoves.length == 0) {
+        if (this.verifiedMoves.length == 0 && !this.choosingDir) {
             // If your first selection didn't have any moves, don't end turn
             if (this.history.length == 1) {
                 this.resetMove();
@@ -58,8 +58,19 @@ class Move {
             }
             
             // Otherwise, end turn;
+            console.log("ending in next")
             this.endMove();
             return;
+        }
+
+        // If there is a choice needing to be made
+        if (this.choosingDir) {
+            console.log("in find next, choosing dir")
+            let prev = this.history[this.history.length - 2];
+            let dir = getDirection(prev[0], prev[1], cur[0], cur[1]);
+
+            this.verifiedMoves = [[cur[0] + dir[0], cur[1] + dir[1]], [cur[0] - (2 * dir[0]), cur[1] - (2 * dir[1])]];
+
         }
 
         this.select(cur[0], cur[1]);
@@ -70,32 +81,46 @@ class Move {
     }
 
     nextMove(r, c) {
+        console.log("next move")
         let prevPos = this.history[this.history.length - 1];
         let dir = getDirection(prevPos[0], prevPos[1], r, c);
-        
-        // Unselect piece
-        if (r == prevPos[0] && c == prevPos[1]) {
-            this.resetMove();
-            return;
-        }
-        // Pick from two if moving towards and away;
-        else if (this.choosDir) {
-            console.log("choose two");
-            this.choosDir = false;
-        }
-         if (includes(this.verifiedMoves, [r, c])) {
-            // Swap board pieces
-            board.board[r][c] = this.player;
-            board.board[prevPos[0]][prevPos[1]] = 0;
 
-            board.addArrow(prevPos[0], prevPos[1], r, c);
+        console.log(this.choosingDir);
+        if (!this.choosingDir) {
+            // Unselect piece
+            if (r == prevPos[0] && c == prevPos[1]) {
+                this.resetMove();
+                return;
+            }
+            else if (includes(this.verifiedMoves, [r, c])) {
+                // Swap board pieces
+                board.board[r][c] = this.player;
+                board.board[prevPos[0]][prevPos[1]] = 0;
 
-            this.handleTaking(r, c, dir);
-            this.history.push([r, c]);
+                board.addArrow(prevPos[0], prevPos[1], r, c);
+
+                this.handleTaking(r, c, dir);
+                this.history.push([r, c]);
+            }
         }
+        else if (includes(this.verifiedMoves, [r, c])) {
+            let newR = prevPos[0];
+            let newC = prevPos[1];
 
+            if (Math.abs(dir[0]) == 2) { 
+                dir = [dir[0]/2, dir[1]]; 
+                newR += dir[0];
+            }
+            if (Math.abs(dir[1]) == 2) { 
+                dir = [dir[0], dir[1]/2]; 
+                newC += dir[1];
+            }
+            this.take(newR, newC, dir);
+
+            this.choosingDir = false;
+        }
         // If no moves exist, make the one turn and finish move
-        if (this.noMovesExist) {
+        if (this.noMovesExist && !this.choosingDir) {
             this.endMove();
         }
         else {
@@ -108,11 +133,11 @@ class Move {
         board.highlighting = [];
         this.moveIsHappening = false;
         this.noMovesExist = false;
-        this.chooseDir = false;
         this.deselect();
     }
 
     endMove() {
+        console.log("ending")
         this.resetMove();
 
         let text = document.getElementById('turn');
@@ -135,24 +160,26 @@ class Move {
         if (this.movingTowards(r, c, dir)) {
             if (this.movingAway(r, c, dir)) {
                 // Moving towards and away... choose
-                console.log("choose two");
-                this.choosDir = true;
-                board.addHighlight([r + dir[0], c + dir[1]]);
-                board.addHighlight([r - (2 * dir[0]), c - (2 * dir[1])]);
+                console.log("choosing")
+                this.choosingDir = true;
             }
             else {
                 // Moving towards;
+                console.log("taking f");
                 this.take(r, c, dir);
             }
         }
         else {
             // Moving away
+            console.log("taking b");
             dir = [-dir[0], -dir[1]];
             this.take(r + dir[0], c + dir[1], dir);
         }
     }
 
     take(r, c, dir) {
+        console.log([r, c])
+        console.log(dir)
         let opp = (this.player % 2) + 1;
         r += dir[0];
         c += dir[1];
@@ -192,8 +219,8 @@ class Move {
     }
 
     movingAway(r, c, dir) {
-        r -= dir[0];
-        c -= dir[1]
+        r -= 2 * dir[0];
+        c -= 2 * dir[1]
         if ((0 <= r && r < board.board.length) && (0 <= c && c < board.board[0].length))
             return (board.board[r][c] == ((this.player % 2) + 1));
         else return false;
