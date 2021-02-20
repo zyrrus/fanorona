@@ -40,7 +40,6 @@ class Move {
     }
 
     findNext() {
-        console.log("finding next")
         let cur = this.history[this.history.length - 1];
         let unverifiedMoves = this.getUnverifiedMoves(cur);
         this.verifiedMoves = [];
@@ -58,14 +57,12 @@ class Move {
             }
             
             // Otherwise, end turn;
-            console.log("ending in next")
             this.endMove();
             return;
         }
 
         // If there is a choice needing to be made
         if (this.choosingDir) {
-            console.log("in find next, choosing dir")
             let prev = this.history[this.history.length - 2];
             let dir = getDirection(prev[0], prev[1], cur[0], cur[1]);
 
@@ -81,11 +78,9 @@ class Move {
     }
 
     nextMove(r, c) {
-        console.log("next move")
         let prevPos = this.history[this.history.length - 1];
         let dir = getDirection(prevPos[0], prevPos[1], r, c);
 
-        console.log(this.choosingDir);
         if (!this.choosingDir) {
             // Unselect piece
             if (r == prevPos[0] && c == prevPos[1]) {
@@ -137,7 +132,6 @@ class Move {
     }
 
     endMove() {
-        console.log("ending")
         this.resetMove();
 
         let text = document.getElementById('turn');
@@ -160,12 +154,10 @@ class Move {
         if (this.movingTowards(r, c, dir)) {
             if (this.movingAway(r, c, dir)) {
                 // Moving towards and away... choose
-                console.log("choosing")
                 this.choosingDir = true;
             }
             else {
                 // Moving towards;
-                console.log("taking f");
                 this.take(r, c, dir);
             }
         }
