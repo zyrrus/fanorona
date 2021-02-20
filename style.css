@@ -1,0 +1,41 @@
+html, body {
+    margin: 0;
+    padding: 0;
+  }
+  canvas {
+    padding-bottom: 2rem;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+  
+h1, h2 { 
+  display: block;
+  text-align: center;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+  color: #DEDEDE;
+}
+
+.container {
+  position: relative;
+  display: table;
+  justify-content: center; 
+  align-items: center;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.black {
+  background-color: #161616;
+}
+
+.beige {
+  color: #ebd5b4;
+}
+
+.green {
+  color: #BAB86C;
+}
+
