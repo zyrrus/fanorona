@@ -1,0 +1,173 @@
+:root {
+  --white: #DEDEDE;
+  --black: #161616;
+  --green: #bab86c;
+  --beige: #ebd5b4;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--black);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+  }
+
+canvas {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+  
+h1, h2, h3, ul, p, a { 
+  display: block;
+  margin-top: 0;
+  margin-bottom: .5rem;
+  color: var(--white);
+}
+
+a:-webkit-any-link {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+ul li {
+  margin: .3rem;
+}
+
+.large-h1 {
+  font-size: 2.5em;
+}
+
+
+.container {
+  position: relative;
+  display: table;
+  justify-content: center; 
+  align-items: center;
+  text-align: center;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+.text-container {
+  width: 80%;
+  text-align: left;
+}
+.centered {
+  margin: 0;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -40%);
+}
+
+
+.menu-button {
+  font-size: 1.25rem;
+  padding: .75rem 0;
+  width: 15rem;
+  margin: .5rem;
+  border-radius: 2em;
+  color: var(--black);
+  background-color: var(--green);
+}
+.menu-button:hover {
+  cursor: pointer;
+  box-shadow: 0 0rem 1.4rem 0 rgba(186, 184, 108, 175);
+  transform: translateY(-0.1rem);
+  transition: 150ms;
+}
+
+
+.beige {
+  color: var(--beige);
+}
+.green {
+  color: var(--green);
+}
+
+
+/* I'm not very familiar with CSS. Nothing below here is mine
+   I just wanted the Mac-styled buttons */
+.buttons {
+  padding-left: 8px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  float: left;
+  line-height: 0px;
+}
+.buttons:hover a {
+  visibility: visible;
+}
+
+
+.menu {
+  background: #ff5c5c;
+  line-height: 11px;
+  width: 11px;
+  height: 11px;
+  border: 1px solid #e33e41;
+  border-radius: 50%;
+  display: inline-block;
+}
+.menu:active {
+  background: #c14645;
+  border: 1px solid #b03537;
+}
+.menu:active .menubutton {
+  color: #c14645;
+}
+.menubutton {
+  color: #ff5c5c;
+  visibility: hidden;
+  cursor: default;
+}
+
+
+.rules {
+  background: #ffbd4c;
+  font-size: 9pt;
+  line-height: 11px;
+  margin-left: 4px;
+  width: 11px;
+  height: 11px;
+  border: 1px solid #e09e3e;
+  border-radius: 50%;
+  display: inline-block;
+}
+.rules:active {
+  background: #c08e38;
+  border: 1px solid #af7c33;
+}
+.rules:active .rulesbutton {
+  color: #c08e38;
+}
+.rulesbutton {
+  color: #ffbd4c;
+  visibility: hidden;
+  cursor: default;
+}
+
+
+.reset {
+  background: #00ca56;
+  font-size: 9pt;
+  line-height: 11px;
+  margin-left: 6px;
+  width: 11px;
+  height: 11px;
+  border: 1px solid #14ae46;
+  border-radius: 50%;
+  display: inline-block;
+}
+.reset:active {
+  background: #029740;
+  border: 1px solid #128435;
+}
+.reset:active .resetbutton {
+  color: #029740;
+}
+.resetbutton {
+  color: #00ca56;
+  visibility: hidden;
+  cursor: default;
+}
