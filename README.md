@@ -1,7 +1,5 @@
 # Fanorona
 ---
-[Click here to play](https://zyrrus.github.io/fanorona/)
----
 ## Here are the rules as explained by [Boardspace](https://www.boardspace.net/fanorona/english/rules.html)
 
 ### Moving: 
@@ -24,6 +22,5 @@
 ---
 ## My Edits
 My version has some slight modifications to these rules.
-
 - Subsequent captures on the same turn are not optional, they are required.
 - You **CAN** move in the same direction twice in a row
