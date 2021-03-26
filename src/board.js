@@ -1,11 +1,18 @@
 class Board {
     constructor() {
+        // Drawing queues
         this.highlighting = [];
         this.selected = [];
         this.arrows = [];
 
+        // Remaining pieces
+        this.p1Count = 22;
+        this.p2Count = 22;
+
+        // Who's turn it is
         this.p1Turn = true;
 
+        // Game board
         this.board = [
             [2, 2, 2, 2, 2, 2, 2, 2, 2], 
             [2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -15,9 +22,12 @@ class Board {
         ];
     }
 
+    // Draw to canvas every frame
     render() {
+        // Draw the background lines
         this.drawBG();
 
+        // Draw the pieces
         for (let r = 0; r < this.board.length; r++) {
             for (let c = 0; c < this.board[0].length; c++) {
                 if (this.board[r][c] == 1) { this.drawBoldCircle(r, c, beige); }
@@ -25,38 +35,58 @@ class Board {
             }
         }
 
+        // Make the selected piece black
         if (this.selected.length > 0) {
             this.drawBoldCircle(this.selected[0], this.selected[1], black);
         }
 
+        // Draw the arrows during a turn
         this.arrows.forEach(arrow => {
             this.drawArrow(arrow[0], arrow[1], arrow[2], arrow[3]);
         });
 
-        this.highlight();
-    }
-    
-    clickedOn(r, c) {
-        if ((0 <= r && r < this.board.length) && (0 <= c && c < this.board[0].length)) return this.board[r][c];
-        return -1;
-    }
-
-    highlight() {
+        // Highlight any available moves
         this.highlighting.forEach(spot => {
             noStroke();
             fill(255, 255, 255, 150);
             this.drawCircle(spot[0], spot[1]);
         });
     }
+    
 
+
+    /// Get -------------------------------------------------------------------
+
+    // Return the piece type at the given row and column
+    clickedOn(r, c) {
+        if ((0 <= r && r < this.board.length) && (0 <= c && c < this.board[0].length)) return this.board[r][c];
+        return -1;
+    }
+
+
+
+    /// Set -------------------------------------------------------------------
+
+    // Add to the highlight queue
     addHighlight(coord) {
         this.highlighting.push(coord);
     }
 
+    // Add to the arrow queue
     addArrow(row1, col1, row2, col2) {
         this.arrows.push([row1, col1, row2, col2]);
     }
 
+    // Decrease the appropriate player's piece counter by one
+    updateCount(player) {
+        if (player == 1) { this.p1Count--; }
+        else { this.p2Count--; }
+    }
+
+
+    /// Draw ------------------------------------------------------------------
+
+    // Draw the arrows in the proper orientation
     drawArrow(row1, col1, row2, col2) {
         let tail = RCtoXY(row1, col1);
         let tip = RCtoXY(row2, col2);
@@ -124,6 +154,7 @@ class Board {
         
     }
 
+    // Draw a circle with a given color and a large black outline
     drawBoldCircle(r, c, color) {
         stroke(black);
         strokeWeight(scale);
@@ -131,6 +162,7 @@ class Board {
         this.drawCircle(r, c);
     }
 
+    // Draw a circle with no set stroke or color at a given row and column
     drawCircle(r, c) {
         let xy = RCtoXY(r, c);
         circle(xy[0], xy[1], 3 * scale);

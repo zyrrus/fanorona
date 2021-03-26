@@ -1,6 +1,10 @@
 class Move {
     constructor() {
+        // Start with player 1, 
+        // Indicates whose turn it is
         this.player = 1;
+
+        // Flags
         this.moveIsHappening = false;
         this.noMovesExist = false;
         this.choosingDir = false;
@@ -8,7 +12,12 @@ class Move {
         this.history = [];
         this.verifiedMoves = []
     }
+
+
+
+    /// Moving ----------------------------------------------------------------
     
+    // Each turn starts with a new move
     startNewMove(player, r, c) {
         this.player = player;
         this.moveIsHappening = true;
@@ -25,6 +34,9 @@ class Move {
         }
     }
 
+    // If there is no forced move, 
+    // then let any piece be selected
+    // and highlight any possible moves
     findAny() {
         let cur = this.history[this.history.length - 1];
         let unverifiedMoves = this.getUnverifiedMoves(cur);
@@ -39,6 +51,9 @@ class Move {
         });
     }
 
+    // If there is a forced move, 
+    // then require a piece with an available move to be selected
+    // and highlight its possible moves
     findNext() {
         let cur = this.history[this.history.length - 1];
         let unverifiedMoves = this.getUnverifiedMoves(cur);
@@ -77,6 +92,8 @@ class Move {
         });
     }
 
+    // Perform selected move
+    // and find next available moves
     nextMove(r, c) {
         let prevPos = this.history[this.history.length - 1];
         let dir = getDirection(prevPos[0], prevPos[1], r, c);
@@ -123,6 +140,7 @@ class Move {
         }
     }
 
+    // Reset most of the class variables
     resetMove() {
         this.history = [];
         board.highlighting = [];
@@ -131,6 +149,8 @@ class Move {
         this.deselect();
     }
 
+    // End the current player's turn, 
+    // updated turn indicator
     endMove() {
         this.resetMove();
 
@@ -139,16 +159,28 @@ class Move {
         if (this.player == 1) {
             this.player = 2;
             board.p1Turn = false;
-            text.innerText = "Player 2's turn";
-            text.setAttribute('class', 'green');
+
+            if (board.p2Count > 0) {
+                text.innerText = "Player 2's turn";
+                text.setAttribute('class', 'green');
+            }
+            else { text.innerText = "Player 1 wins!"; }
         }
         else {
             this.player = 1;
             board.p1Turn = true;
-            text.innerText = "Player 1's turn";
-            text.setAttribute('class', 'beige');
+
+            if (board.p1Count > 0) {
+                text.innerText = "Player 1's turn";
+                text.setAttribute('class', 'beige');
+            }
+            else { text.innerText = "Player 2 wins!"; }
         }
     }
+
+
+
+    /// Attacking  ------------------------------------------------------------
 
     handleTaking(r, c, dir) {
         if (this.movingTowards(r, c, dir)) {
@@ -163,21 +195,19 @@ class Move {
         }
         else {
             // Moving away
-            console.log("taking b");
             dir = [-dir[0], -dir[1]];
             this.take(r + dir[0], c + dir[1], dir);
         }
     }
 
     take(r, c, dir) {
-        console.log([r, c])
-        console.log(dir)
         let opp = (this.player % 2) + 1;
         r += dir[0];
         c += dir[1];
 
         while ((0 <= r && r < board.board.length) && (0 <= c && c < board.board[0].length)) {
             if (board.board[r][c] == opp) {
+                board.updateCount(opp);
                 board.board[r][c] = 0;
             }
             else break;
@@ -186,6 +216,44 @@ class Move {
         }
     }
 
+    // Detect moving towards enemies
+    movingTowards(r, c, dir) {
+        r += dir[0];
+        c += dir[1]
+        if ((0 <= r && r < board.board.length) && (0 <= c && c < board.board[0].length))
+            return (board.board[r][c] == ((this.player % 2) + 1));
+        else return false;
+    }
+
+    // Detect moving away from enemies
+    movingAway(r, c, dir) {
+        r -= 2 * dir[0];
+        c -= 2 * dir[1]
+        if ((0 <= r && r < board.board.length) && (0 <= c && c < board.board[0].length))
+            return (board.board[r][c] == ((this.player % 2) + 1));
+        else return false;
+    }
+    
+
+
+    /// Selection -------------------------------------------------------------
+
+    // Tells board to render [r, c] as a solid black piece 
+    select(r, c) {
+        board.selected = [r, c];
+    }
+
+    // Tells board to render all pieces as their appropriate color
+    deselect() {
+        board.selected = [];
+    }
+    
+
+
+    /// Move Verification -----------------------------------------------------
+
+    // If no forced moves exist, set the flag this.noMovesExist = true
+    // to change which moves are allowed
     checkIfMovesExist() {
         this.verifiedMoves = [];
         for (let r = 0; r < board.board.length; r++) {
@@ -201,33 +269,37 @@ class Move {
         }
     }
 
-    // Misc ----------------------------------------------------------------------------------
-    movingTowards(r, c, dir) {
-        r += dir[0];
-        c += dir[1]
-        if ((0 <= r && r < board.board.length) && (0 <= c && c < board.board[0].length))
-            return (board.board[r][c] == ((this.player % 2) + 1));
-        else return false;
+    // Returns a list of adjacent, empty spaces without taking into account
+    // attacking, forced moves, or previously visited spaces
+    getUnverifiedMoves(i) {
+        let r = i[0];
+        let c = i[1];
+        let moveType = (r + c) % 2; // 0 = 8 ways; 1 = 4 ways;
+        let unverifiedMoves = [];
+
+        if (moveType == 0) { // Can move in all 8 directions
+            for (let row = r - 1; row <= r + 1; row++) {
+                for (let col = c - 1; col <= c + 1; col++) {
+                    if ((0 <= row && row < board.board.length) && (0 <= col && col < board.board[0].length)) {
+                        if (board.clickedOn(row, col) == 0) {
+                            unverifiedMoves.push([row, col]);
+                        }
+                    }
+                }
+            }
+        }
+        else { // Can move in only 4 directions
+            if (r - 1 >= 0                    && board.board[r - 1][c] == 0) { unverifiedMoves.push([r - 1, c]); }
+            if (r + 1 < board.board.length    && board.board[r + 1][c] == 0) { unverifiedMoves.push([r + 1, c]); }
+            if (c - 1 >= 0                    && board.board[r][c - 1] == 0) { unverifiedMoves.push([r, c - 1]); }
+            if (c + 1 < board.board[0].length && board.board[r][c + 1] == 0) { unverifiedMoves.push([r, c + 1]); }
+        }
+        return unverifiedMoves;
     }
 
-    movingAway(r, c, dir) {
-        r -= 2 * dir[0];
-        c -= 2 * dir[1]
-        if ((0 <= r && r < board.board.length) && (0 <= c && c < board.board[0].length))
-            return (board.board[r][c] == ((this.player % 2) + 1));
-        else return false;
-    }
-    
-    select(r, c) {
-        board.selected = [r, c];
-    }
-
-    deselect() {
-        board.selected = [];
-    }
-    
+    // Corrects the getUnverifiedMoves() list by taking into account
+    // attacking, forced moves, and previously visited spaces
     getVerifiedMoves(r, c, unverifiedMoves) {
-        // this.verifiedMoves = []
         unverifiedMoves.forEach(move => {
             let dir = getDirection(r, c, move[0], move[1]);
             let opponent = (this.player % 2) + 1;
@@ -242,31 +314,5 @@ class Move {
                 }
             } 
         });
-    }
-
-    getUnverifiedMoves(i) {
-        let r = i[0];
-        let c = i[1];
-        let moveType = (r + c) % 2; // 0 = 8 ways; 1 = 4 ways;
-        let unverifiedMoves = [];
-
-        if (moveType == 0) {
-            for (let row = r - 1; row <= r + 1; row++) {
-                for (let col = c - 1; col <= c + 1; col++) {
-                    if ((0 <= row && row < board.board.length) && (0 <= col && col < board.board[0].length)) {
-                        if (board.clickedOn(row, col) == 0) {
-                            unverifiedMoves.push([row, col]);
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            if (r - 1 >= 0                     && board.board[r - 1][c] == 0) { unverifiedMoves.push([r - 1, c]); }
-            if (r + 1 < board.board.length    && board.board[r + 1][c] == 0) { unverifiedMoves.push([r + 1, c]); }
-            if (c - 1 >= 0                     && board.board[r][c - 1] == 0) { unverifiedMoves.push([r, c - 1]); }
-            if (c + 1 < board.board[0].length && board.board[r][c + 1] == 0) { unverifiedMoves.push([r, c + 1]); }
-        }
-        return unverifiedMoves;
     }
 }
