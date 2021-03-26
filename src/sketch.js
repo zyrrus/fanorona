@@ -9,14 +9,16 @@ const margin = 30;
 const offset = 80;
 const scale = 10;
 
+// Objects
 let board;
 let move;
 
+/* Issues --------------------------------------------------------------
+   You shouldn't be able to move in the same direction twice 
+   (first taking a piece by moving away, the taking again by approaching)
+*/ 
 
-/*  Issues
-    you currently cant decide which to take when taking forwards and backwards
-*/
-
+// Called on start
 function setup() {
     let w = (offset * 8) + (margin * 2);
     let h = (offset * 4) + (margin * 2);
@@ -26,6 +28,7 @@ function setup() {
     board = new Board();
 }
 
+// Called every frame
 function draw() {
     // Render background
     background(black);
@@ -37,6 +40,7 @@ function draw() {
     board.render();
 }
 
+// Called when mouse is clicked
 function mouseClicked() {
     let m = XYtoRC(mouseX, mouseY);
 
@@ -48,6 +52,7 @@ function mouseClicked() {
     }
 }
 
+// 
 function handleTurns(indices, player) {
     let tile = board.clickedOn(indices[0], indices[1]);
 
@@ -70,6 +75,7 @@ function handleTurns(indices, player) {
 function RCtoXY(row, col) {
     return [(col * offset) + margin, (row * offset) + margin];
 }
+
 // Convert from x/y to row/col
 function XYtoRC(x, y) {
     let row = 0; 
@@ -90,6 +96,7 @@ function XYtoRC(x, y) {
     return [row, col];
 }
 
+// Returns true if the pair [a, b] exists in [[r1, c1], [r2, c2], ...]
 function includes(arr1, arr2) {
     let ans = false;
     arr1.forEach(pair => {
@@ -100,6 +107,7 @@ function includes(arr1, arr2) {
     return ans;
 }
 
+// Returns the direction of a vector from root to tip
 function getDirection(rootR, rootC, tipR, tipC) {
     return [tipR - rootR, tipC - rootC];
 }
