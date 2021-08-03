@@ -1,29 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
     <meta charset="utf-8" />
     <title>Fanorona</title>
   </head>
-  <body class="container centered">
+  <body class="container game">
     <!--Header-->
-    <div class="container">
+    <div class="game--header">
       <h1>FANORONA</h1>
       <h2 id="turn" class="beige">Player 1's turn</h2>
     </div>
-    <!--Mac-style buttons-->
-    <div class="buttons">
-      <div class="menu">
-        <a class="menubutton" href="../index.html" title="Menu"><span>.</span></a>
-      </div>
-      <div class="rules">
-        <a class="rulesbutton" href="rules.html" title="Rules"><span>.</span></a>
-      </div>
-      <div class="reset">
-        <a class="resetbutton" href="game.html" title="Reset"><span>.</span></a>
-      </div>
+    <!-- Buttons-->
+    <div class="game--btns">
+        <a href="/index.html" class="game--btns--btn btn-red"></a>
+        <a href="/src/rules.html" class="game--btns--btn btn-yellow"></a>
+        <a href="/src/game.html" class="game--btns--btn btn-green"></a>
     </div>
+    
     <!--Scripts for p5.js-->
     <script src="sketch.js"></script>
     <script src="board.js"></script>
